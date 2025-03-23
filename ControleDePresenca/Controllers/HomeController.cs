@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ControleDePresenca.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ControleDePresenca.Controllers;
 
