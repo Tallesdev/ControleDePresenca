@@ -19,5 +19,6 @@ namespace ControleDePresenca.Models
         }
         public DbSet<Evento> Eventos { get; set; }//dbset é tabela
         public DbSet<Participante> Participantes { get; set; }//tabela
+        public DbSet<Certificado> Certificados { get; set; }
     }
 }

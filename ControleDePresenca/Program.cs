@@ -8,21 +8,20 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Pegando a string de conexão
 var connectionString = builder.Configuration.GetConnectionString("BancoPresenca")
     ?? throw new InvalidOperationException("Connection string 'BancoPresenca' not found.");
 
-// Configurar **Context** e **AuthDbContext** para usar BancoPresenca
+// Configurar Context e AuthDbContext para usar BancoPresenca
 builder.Services.AddDbContext<Context>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
-    options.UseSqlServer(connectionString)); // Usa o mesmo banco!
+    options.UseSqlServer(connectionString)); // Usa o mesmo banco
 
-// Configuração do Identity (garantindo que RoleManager será registrado)
+
 builder.Services.AddIdentity<ControleDePresencaUser, IdentityRole>(options =>
     options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<AuthDbContext>()  // O Identity será armazenado no BancoPresenca!
+    .AddEntityFrameworkStores<AuthDbContext>()  
     .AddDefaultUI()
     .AddDefaultTokenProviders();
 
@@ -45,7 +44,7 @@ using (var scope = app.Services.CreateScope())
     await SeedData.Initialize(services, userManager);  // Chama a inicialização de roles e usuário de forma assíncrona
 }
 
-// Configuração do pipeline de requisições
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -55,8 +54,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
-app.UseAuthentication(); // Identity precisa disso!
+//Identity Precisa muito disso !!!1!!! não apagar
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapControllerRoute(

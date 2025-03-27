@@ -33,9 +33,16 @@ namespace ControleDePresenca.Controllers
         {
             if (ModelState.IsValid)
             {
-                context.Participantes.Add(participante);
-                context.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    context.Participantes.Add(participante);
+                    context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Erro ao salvar o participante: " + ex.ToString());
+                }
             }
             return View(participante);
         }
@@ -68,12 +75,21 @@ namespace ControleDePresenca.Controllers
         {
             if (ModelState.IsValid)
             {
-                context.Entry(participante).State = EntityState.Modified;
-                context.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    context.Entry(participante).State = EntityState.Modified;
+                    context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Erro ao editar o participante: " + ex.ToString());
+                }
             }
             return View(participante);
         }
+
+
         [Authorize(Roles = "Administrador")]
         public IActionResult Delete(int id)
         {

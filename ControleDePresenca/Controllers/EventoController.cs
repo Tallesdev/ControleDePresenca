@@ -26,15 +26,39 @@ namespace ControleDePresenca.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create(Evento evento)
         {
+            Console.WriteLine($"Evento recebido: {evento.EventoNome}, {evento.Duracao}");
             if (ModelState.IsValid)
             {
-                context.Eventos.Add(evento);
-                context.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    Console.WriteLine("Modelo válido. Tentando salvar...");
+                    context.Eventos.Add(evento);
+                    context.SaveChanges();
+                    Console.WriteLine("Evento salvo com sucesso.");
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao salvar: {ex.ToString()}");
+                    ModelState.AddModelError("", "Erro ao salvar o evento.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Modelo inválido.");
             }
             return View(evento);
+        }
+        [HttpPost]
+        public IActionResult TesteCriacao()
+        {
+            var eventoTeste = new Evento { EventoNome = "Teste", Duracao = 1 };
+            context.Eventos.Add(eventoTeste);
+            context.SaveChanges();
+            return Content("Teste de criação realizado.");
         }
 
         [HttpGet]
@@ -58,7 +82,7 @@ namespace ControleDePresenca.Controllers
 
             return View(evento);
         }
-
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult Edit(Evento evento)
         {
@@ -81,7 +105,7 @@ namespace ControleDePresenca.Controllers
 
             return View(evento);
         }
-
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult DeleteConfirmed(int id)
         {

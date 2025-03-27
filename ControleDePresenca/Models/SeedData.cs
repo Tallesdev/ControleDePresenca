@@ -38,7 +38,7 @@ namespace ControleDePresenca.Models
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            // Criando roles (funções) sem a role "Organizador"
+           
             string[] roleNames = { "Administrador", "Participante" };
 
             foreach (var roleName in roleNames)
@@ -50,7 +50,7 @@ namespace ControleDePresenca.Models
                 }
             }
 
-            // Agora podemos adicionar um usuário padrão com a role 'Administrador'
+           
             var defaultUser = await userManager.FindByEmailAsync("admin@admin.com");
 
             if (defaultUser == null)
@@ -59,8 +59,8 @@ namespace ControleDePresenca.Models
                 {
                     UserName = "admin@admin.com",
                     Email = "admin@admin.com",
-                    FirstName = "Admin",  // Preenchendo FirstName
-                    LastName = "User"     // Preenchendo LastName
+                    FirstName = "Admin",  
+                    LastName = "User"     
                 };
 
                 var result = await userManager.CreateAsync(user, "Admin@123");
