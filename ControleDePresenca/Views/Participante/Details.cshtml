@@ -1,0 +1,36 @@
+﻿@model ControleDePresenca.Models.Participante
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Participante</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ParticipanteNome)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ParticipanteNome)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Matriculas)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Matriculas)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Eventos)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Eventos.EventoId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.ParticipanteID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
