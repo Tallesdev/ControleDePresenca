@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ControleDePresenca.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250327023621_BancoPresenca")]
-    partial class BancoPresenca
+    [Migration("20250327071202_InicialBancoPresenca")]
+    partial class InicialBancoPresenca
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

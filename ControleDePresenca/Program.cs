@@ -1,51 +1,69 @@
 using ControleDePresenca.Models;
+using ControleDePresenca.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using ControleDePresenca.Areas.Identity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseDefaultServiceProvider(options =>
-{
-    options.ValidateScopes = false; // Ativa a valida��o de escopo. False evita erro de BD inexistente
-});
+// Pegando apenas UMA string de conexão
+var connectionString = builder.Configuration.GetConnectionString("BancoPresenca")
+    ?? throw new InvalidOperationException("Connection string 'BancoPresenca' not found.");
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
-//Configura��o da Entity Framework Core
+// Configurar **AuthDbContext** para usar BancoPresenca
 builder.Services.AddDbContext<Context>(options =>
-    options.UseSqlServer(builder.Configuration["Data:BancoPresenca:ConnectionString"],
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BancoPresenca")));
 
-    //evita que o BD n�o seja criado por problemas de timeout com o servidor
-    sqlServerOptionsAction: sqlOptions =>
-    {
-        sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 10,
-            maxRetryDelay: TimeSpan.FromSeconds(30),
-            errorNumbersToAdd: null);
-    }));
+builder.Services.AddDbContext<AuthDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BancoPresenca"))); // Usa o mesmo banco!
+
+
+// Configurar **Context** também com BancoPresenca
+builder.Services.AddDbContext<Context>(options =>
+    options.UseSqlServer(connectionString));
+
+// Configuração do Identity
+builder.Services.AddDefaultIdentity<ControleDePresencaUser>(options =>
+    options.SignIn.RequireConfirmedAccount = false)
+    .AddEntityFrameworkStores<AuthDbContext>();  // O Identity será armazenado no BancoPresenca!
+
+// Adiciona suporte a Controllers e Razor Pages
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireUppercase = false;
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configuração do pipeline de requisições
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
+app.UseAuthentication(); // Identity precisa disso!
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-//SeedData.Initialize(app.Services);
-SeedData.EnsurePopulated(app);
+app.MapRazorPages();
+
+// Popula o banco de dados (caso necessário)
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<Context>();
+    SeedData.EnsurePopulated(services);
+}
 
 app.Run();

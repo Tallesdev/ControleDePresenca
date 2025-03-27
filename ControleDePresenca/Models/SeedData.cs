@@ -1,30 +1,39 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ControleDePresenca.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ControleDePresenca.Models
 {
     public class SeedData
     {
-        public static void EnsurePopulated(IApplicationBuilder app)
+       
+           public static void EnsurePopulated(IServiceProvider serviceProvider)
         {
-            //associa os dados ao contexto
-            Context context = app.ApplicationServices.GetRequiredService<Context>();
-            //inserir os dados nas entidades do contexto
-            context.Database.Migrate();
-            //se o contexto estiver vazio
-            if (!context.Participantes.Any())
-            //inserir os produtos iniciais
+            var context = serviceProvider.GetRequiredService<Context>();
+
+            context.Database.EnsureCreated();  // Aplica migrações sem recriar tabelas já existentes
+
+            if (!context.Eventos.Any()) // Evita inserção duplicada
+            {
+                context.Eventos.AddRange(
+                    new Evento { EventoNome = "Hackaton", Duracao = 3 },
+                    new Evento { EventoNome = "Palestra IA", Duracao = 4 }
+                );
+            }
+
+            if (!context.Participantes.Any()) // Evita inserção duplicada
             {
                 context.Participantes.AddRange(
                     new Participante { ParticipanteNome = "Maria Eduarda", Matriculas = 11, EventosID = 1 },
                     new Participante { ParticipanteNome = "Short", Matriculas = 120, EventosID = 1 },
-                    new Participante { ParticipanteNome = "Tênis", Matriculas = 540, EventosID = 2 });
-
-                context.Eventos.AddRange(
-                    new Evento { EventoNome = "Hackaton", Duracao = 3 },
-                    new Evento { EventoNome = "Palestra IA", Duracao = 4});
-
-                context.SaveChanges();
+                    new Participante { ParticipanteNome = "Tênis", Matriculas = 540, EventosID = 2 }
+                );
             }
+
+            context.SaveChanges();
         }
+
     }
 }
+
