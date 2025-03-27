@@ -1,10 +1,23 @@
 ﻿@model IEnumerable<ControleDePresenca.Models.Evento>
 
 @{
-    ViewData["Title"] = "Index";
-}
+    ViewData["Title"] = "IndexEventos";
+    
+    Layout = null;
 
-<h1>Index</h1>
+}
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ControleDePresenca</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Eventos.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ControleDePresenca.styles.css" asp-append-version="true" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<h1>Eventos</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
