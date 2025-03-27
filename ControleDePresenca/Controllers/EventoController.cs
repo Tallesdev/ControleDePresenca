@@ -1,76 +1,95 @@
 ﻿using ControleDePresenca.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace ControleDePresenca.Controllers
 {
     public class EventoController : Controller
     {
-        public Context context; 
+        private readonly Context context;
 
         public EventoController(Context ctx)
-                                                
         {
             context = ctx;
         }
+
         public IActionResult Index()
         {
-            return View(context.Eventos.Include(p => p.Participantes));
+            var eventos = context.Eventos.Include(e => e.Participantes);
+            return View(eventos);
         }
+
         public IActionResult Create()
         {
-            ViewBag.ParticipanteId = new SelectList(context.Participantes.OrderBy(p => p.ParticipanteNome), "ParticipanteID", "ParticipanteNome");// viewbag pra gerar lista de participantes
             return View();
         }
+
         [HttpPost]
         public IActionResult Create(Evento evento)
         {
-            context.Add(evento);
-            context.SaveChanges();
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                context.Eventos.Add(evento);
+                context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(evento);
         }
 
         [HttpGet]
         public IActionResult Details(int? id)
         {
-            var Evento = context.Eventos    
-                .Include(p => p.Participantes)
+            if (id == null) return NotFound();
+
+            var evento = context.Eventos
+                .Include(e => e.Participantes)
                 .FirstOrDefault(e => e.EventoId == id);
-            return View(Evento);
+
+            if (evento == null) return NotFound();
+
+            return View(evento);
         }
+
         public IActionResult Edit(int id)
         {
-            var Evento = context.Eventos.Find(id);
-            ViewBag.ParticipanteID = new SelectList(context.Participantes.OrderBy(p => p.ParticipanteNome), "ParticipanteID", "ParticipanteNome");
-            return View(Evento);
+            var evento = context.Eventos.Find(id);
+            if (evento == null) return NotFound();
+
+            return View(evento);
         }
 
         [HttpPost]
         public IActionResult Edit(Evento evento)
         {
-            context.Entry(evento).State = EntityState.Modified;
-            context.SaveChanges();
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                context.Entry(evento).State = EntityState.Modified;
+                context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(evento);
         }
 
         public IActionResult Delete(int id)
         {
             var evento = context.Eventos
-                .Include(p => p.Participantes)
+                .Include(e => e.Participantes)
                 .FirstOrDefault(e => e.EventoId == id);
+
+            if (evento == null) return NotFound();
+
             return View(evento);
         }
 
         [HttpPost]
-        public IActionResult Delete(Evento evento)
+        public IActionResult DeleteConfirmed(int id)
         {
+            var evento = context.Eventos.Find(id);
+            if (evento == null) return NotFound();
+
             context.Eventos.Remove(evento);
             context.SaveChanges();
             return RedirectToAction("Index");
         }
-
-
     }
 }
