@@ -15,7 +15,7 @@ namespace ControleDePresenca.Models
             //inserir os produtos iniciais
             {
                 context.Participantes.AddRange(
-                    new Participante { ParticipanteNome = "Camiseta Oficial", Matriculas = 11, EventosID = 1 },
+                    new Participante { ParticipanteNome = "Maria Eduarda", Matriculas = 11, EventosID = 1 },
                     new Participante { ParticipanteNome = "Short", Matriculas = 120, EventosID = 1 },
                     new Participante { ParticipanteNome = "Tênis", Matriculas = 540, EventosID = 2 });
 

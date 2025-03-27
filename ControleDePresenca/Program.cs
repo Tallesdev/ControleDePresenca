@@ -13,7 +13,7 @@ builder.Services.AddControllersWithViews();
 
 //Configuração da Entity Framework Core
 builder.Services.AddDbContext<Context>(options =>
-    options.UseSqlServer(builder.Configuration["Data:Exemplo_EF_BD25:ConnectionString"],
+    options.UseSqlServer(builder.Configuration["Data:BancoPresenca:ConnectionString"],
 
     //evita que o BD não seja criado por problemas de timeout com o servidor
     sqlServerOptionsAction: sqlOptions =>
