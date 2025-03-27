@@ -5,7 +5,7 @@
 namespace ControleDePresenca.Migrations
 {
     /// <inheritdoc />
-    public partial class BDPresenca : Migration
+    public partial class BancoPresenca : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
