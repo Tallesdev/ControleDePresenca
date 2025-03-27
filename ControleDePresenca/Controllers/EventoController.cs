@@ -1,4 +1,5 @@
 ﻿using ControleDePresenca.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +19,7 @@ namespace ControleDePresenca.Controllers
             var eventos = context.Eventos.Include(e => e.Participantes);
             return View(eventos);
         }
-
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             return View();
@@ -49,7 +50,7 @@ namespace ControleDePresenca.Controllers
 
             return View(evento);
         }
-
+        [Authorize(Roles = "Administrador")]
         public IActionResult Edit(int id)
         {
             var evento = context.Eventos.Find(id);
@@ -69,7 +70,7 @@ namespace ControleDePresenca.Controllers
             }
             return View(evento);
         }
-
+        [Authorize(Roles = "Administrador")]
         public IActionResult Delete(int id)
         {
             var evento = context.Eventos
