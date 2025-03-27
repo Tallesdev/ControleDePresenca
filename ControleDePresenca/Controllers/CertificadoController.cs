@@ -32,6 +32,7 @@ public class CertificadoController : Controller
             {
                 return BadRequest("Participante ou Evento não foram fornecidos.");
             }
+            else { 
 
 
             // Buscar participante e evento usando o DbContext do BancoPresenca
@@ -72,7 +73,8 @@ public class CertificadoController : Controller
             Console.WriteLine($"Participante: {participante?.ParticipanteNome}");
             Console.WriteLine($"Evento: {evento?.EventoNome}");
 
-            return View(modeloCertificado);
+                return View(modeloCertificado);
+            }
         }
     }
 
