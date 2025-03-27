@@ -19,10 +19,9 @@ namespace ControleDePresenca.Controllers
         {
             return View(context.Eventos.Include(p => p.Participantes));
         }
-
         public IActionResult Create()
         {
-            ViewBag.ParticipanteId = new SelectList(context.Participantes.OrderBy(p => p.ParticipanteNome), "ParticipanteID", "Nome");// viewbag pra gerar lista de participantes
+            ViewBag.ParticipanteId = new SelectList(context.Participantes.OrderBy(p => p.ParticipanteNome), "ParticipanteID", "ParticipanteNome");// viewbag pra gerar lista de participantes
             return View();
         }
         [HttpPost]
@@ -32,5 +31,46 @@ namespace ControleDePresenca.Controllers
             context.SaveChanges();
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public IActionResult Details(int? id)
+        {
+            var Evento = context.Eventos    
+                .Include(p => p.Participantes)
+                .FirstOrDefault(e => e.EventoId == id);
+            return View(Evento);
+        }
+        public IActionResult Edit(int id)
+        {
+            var Evento = context.Eventos.Find(id);
+            ViewBag.ParticipanteID = new SelectList(context.Participantes.OrderBy(p => p.ParticipanteNome), "ParticipanteID", "ParticipanteNome");
+            return View(Evento);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Evento evento)
+        {
+            context.Entry(evento).State = EntityState.Modified;
+            context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var evento = context.Eventos
+                .Include(p => p.Participantes)
+                .FirstOrDefault(e => e.EventoId == id);
+            return View(evento);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(Evento evento)
+        {
+            context.Eventos.Remove(evento);
+            context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+
     }
 }
