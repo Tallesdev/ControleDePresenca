@@ -1,4 +1,5 @@
 ﻿using ControleDePresenca.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ namespace ControleDePresenca.Controllers
             var participantes = context.Participantes.Include(p => p.Eventos);
             return View(participantes);
         }
-
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             // Exibir os eventos disponíveis para o participante escolher ao se cadastrar
@@ -52,7 +53,7 @@ namespace ControleDePresenca.Controllers
 
             return View(participante);
         }
-
+        [Authorize(Roles = "Administrador")]
         public IActionResult Edit(int id)
         {
             var participante = context.Participantes.Find(id);
@@ -73,7 +74,7 @@ namespace ControleDePresenca.Controllers
             }
             return View(participante);
         }
-
+        [Authorize(Roles = "Administrador")]
         public IActionResult Delete(int id)
         {
             var participante = context.Participantes

@@ -3,29 +3,28 @@ using ControleDePresenca.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using ControleDePresenca.Areas.Identity.Data;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Pegando apenas UMA string de conexão
+// Pegando a string de conexão
 var connectionString = builder.Configuration.GetConnectionString("BancoPresenca")
     ?? throw new InvalidOperationException("Connection string 'BancoPresenca' not found.");
 
-// Configurar **AuthDbContext** para usar BancoPresenca
-builder.Services.AddDbContext<Context>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BancoPresenca")));
-
-builder.Services.AddDbContext<AuthDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BancoPresenca"))); // Usa o mesmo banco!
-
-
-// Configurar **Context** também com BancoPresenca
+// Configurar **Context** e **AuthDbContext** para usar BancoPresenca
 builder.Services.AddDbContext<Context>(options =>
     options.UseSqlServer(connectionString));
 
-// Configuração do Identity
-builder.Services.AddDefaultIdentity<ControleDePresencaUser>(options =>
+builder.Services.AddDbContext<AuthDbContext>(options =>
+    options.UseSqlServer(connectionString)); // Usa o mesmo banco!
+
+// Configuração do Identity (garantindo que RoleManager será registrado)
+builder.Services.AddIdentity<ControleDePresencaUser, IdentityRole>(options =>
     options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<AuthDbContext>();  // O Identity será armazenado no BancoPresenca!
+    .AddEntityFrameworkStores<AuthDbContext>()  // O Identity será armazenado no BancoPresenca!
+    .AddDefaultUI()
+    .AddDefaultTokenProviders();
 
 // Adiciona suporte a Controllers e Razor Pages
 builder.Services.AddControllersWithViews();
@@ -37,6 +36,14 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 var app = builder.Build();
+
+// Inicializando as roles e o usuário administrador
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var userManager = services.GetRequiredService<UserManager<ControleDePresencaUser>>();
+    await SeedData.Initialize(services, userManager);  // Chama a inicialização de roles e usuário de forma assíncrona
+}
 
 // Configuração do pipeline de requisições
 if (!app.Environment.IsDevelopment())
@@ -57,13 +64,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
-
-// Popula o banco de dados (caso necessário)
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<Context>();
-    SeedData.EnsurePopulated(services);
-}
 
 app.Run();
